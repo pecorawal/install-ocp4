@@ -95,7 +95,7 @@ Estando todos os cluster operators estáveis, execute o comando de finalização
 [source]
 ----
 ./openshift-install wait-for install-complete --dir install --log-level debug
-
+----
 
 Pronto, agora já pode acessar a console do Openshift com o usuário kubeadmin criado automaticamente.
 
