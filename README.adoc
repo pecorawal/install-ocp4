@@ -1,0 +1,105 @@
+= Tutorial de como instalar o Openshift Bare Metal
+
+
+== Prerequisitos
+
+.VM com Linux para servir de bastion host.
+.Instalar o dhcp server no bastion seguindo as instruções do repo: https://github.com/pecorawal/dhcp.git
+.Instalar um servidor de tFTP seguindo as instruções do repo: https://github.com/pecorawal/pxe.git
+.Instalar um servidor httpd seguindo as instruções do repo: https://github.com/pecorawal/httpd4ocp.git
+.Criar um arquivo de instalação com as definições basicas para o cluster - ver subseção abaixo: Exemplo de install-config.yaml
+.Baixar os instaladores e clientes do Openshift - ver seção abaixo: Preparando ambiente 
+.Executar a criação dos arquivos de ignition ver seção abaixo: Instalando Openshift
+.Criar um servidor de haproxy no bastion para executar a instalação e funcionamento em alta disponibilidade, seguindo as instruções do repo: https://github.com/pecorawal/haproxy.git
+
+== Preparando ambiente
+
+
+Download dos clients *oc* e *kubectl*:
+     https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+Download do instalador *openshift-install*:
+     https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-install-linux.tar.gz
+         
+=== Exemplo de install-config.yaml
+
+[source]
+----
+vi install-config.yaml
+apiVersion: v1
+baseDomain: example.com 
+compute: 
+- hyperthreading: Enabled 
+  name: worker
+  replicas: 0 
+controlPlane: 
+  hyperthreading: Enabled 
+  name: master
+  replicas: 3 
+metadata:
+  name: test 
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14 
+    hostPrefix: 23 
+  networkType: OpenShiftSDN
+  serviceNetwork: 
+  - 172.30.0.0/16
+platform:
+  none: {} 
+fips: false 
+pullSecret: '{"auths": ...}' 
+sshKey: 'ssh-ed25519 AAAA...'
+----
+
+
+=== Descompactar os instaladores baixados:
+
+[source]
+----
+/root/ocp/installers/
+├── openshift-client-linux.tar.gz
+├── openshift-install-linux.tar.gz
+
+tar xzvf openshift-client-linux.tar.gz
+tar xzvf openshift-install-linux.tar.gz
+----
+
+=== Criação dos Ignition Configs
+
+[source]
+----
+cp /root/ocp/installers/openshift-install /root/ocp/
+cd /root/ocp
+./openshift-install create manifests --dir install
+./openshift-install create ignition-configs --dir install
+cp /root/ocp/install/*.ign /var/www/html/ignition
+chown -R apache. /var/www/html/ignition/*.ign
+chmod -R 740 /var/www/html/ignition
+----
+
+
+
+== Instalando Openshift
+
+
+Após preparado todo o ambiente, o passo seguinte é a instalação dos sistemas operacionais de acordo com as roles de bootstrap, master e worker. Do virtualizador, ligar a VM de bootstrap, escolher no boot menu a opção PXE. Um menu aparecerá na console da máquina virtual. Para cada tipo de VM ligada foi efetuada a seleção adequada.
+
+Depois de todas as VMs aparecerem na tela de início, significa que é possivel executar o comando de bootstrap do instalador:
+
+[source]
+----
+./openshift-install wait-for bootstrap-complete --dir install --log-level debug
+----
+
+A instalação iniciará e dentro de 30 minutos a primeira parte da instalação estará pronta para verificações. Após concluida a instalação, verifique se os cluster operators estão todos em Available, desligue a maquina virtual de bootstrap [pode ser destruída inclusive!] e remova o apontamento do bootstrap no balanceador haproxy. 
+Estando todos os cluster operators estáveis, execute o comando de finalização da instalação.
+
+[source]
+----
+./openshift-install wait-for install-complete --dir install --log-level debug
+
+
+Pronto, agora já pode acessar a console do Openshift com o usuário kubeadmin criado automaticamente.
+
+
+
