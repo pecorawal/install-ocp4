@@ -3,22 +3,20 @@
 
 == Prerequisitos
 
-.VM com Linux para servir de bastion host.
-.Instalar o dhcp server no bastion seguindo as instruções do repo: https://github.com/pecorawal/dhcp.git
-.Instalar um servidor de tFTP seguindo as instruções do repo: https://github.com/pecorawal/pxe.git
-.Instalar um servidor httpd seguindo as instruções do repo: https://github.com/pecorawal/httpd4ocp.git
-.Criar um arquivo de instalação com as definições basicas para o cluster - ver subseção abaixo: Exemplo de install-config.yaml
-.Baixar os instaladores e clientes do Openshift - ver seção abaixo: Preparando ambiente 
-.Executar a criação dos arquivos de ignition ver seção abaixo: Instalando Openshift
-.Criar um servidor de haproxy no bastion para executar a instalação e funcionamento em alta disponibilidade, seguindo as instruções do repo: https://github.com/pecorawal/haproxy.git
+- VM com Linux para servir de bastion host.
+- Instalar o dhcp server no bastion seguindo as instruções do repo: https://github.com/pecorawal/dhcp.git
+- Instalar um servidor de tFTP seguindo as instruções do repo: https://github.com/pecorawal/pxe.git
+- Instalar um servidor httpd seguindo as instruções do repo: https://github.com/pecorawal/httpd4ocp.git
+- Criar um arquivo de instalação com as definições basicas para o cluster - ver subseção abaixo: Exemplo de install-config.yaml
+- Baixar os instaladores e clientes do Openshift - ver seção abaixo: Preparando ambiente 
+- Executar a criação dos arquivos de ignition ver seção abaixo: Instalando Openshift
+- Criar um servidor de haproxy no bastion para executar a instalação e funcionamento em alta disponibilidade, seguindo as instruções do repo: https://github.com/pecorawal/haproxy.git
 
 == Preparando ambiente
 
+Download dos clients *oc* e *kubectl*: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
 
-Download dos clients *oc* e *kubectl*:
-     https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
-Download do instalador *openshift-install*:
-     https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-install-linux.tar.gz
+Download do instalador *openshift-install*: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-install-linux.tar.gz
          
 === Exemplo de install-config.yaml
 
